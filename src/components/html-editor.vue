@@ -326,97 +326,102 @@ const update_toggle_multiple = () => {
 
 <template>
 	<v-card>
-		<v-btn-toggle
-			:multiple="true"
-			v-model="toggle_multiple"
-			rounded="0"
-		>
-			<v-btn @click="bold()" size="x-small">
-				<v-icon size="x-large">mdi-format-bold</v-icon>
-			</v-btn>
-			<v-btn @click="italic()" size="x-small">
-				<v-icon size="x-large">mdi-format-italic</v-icon>
-			</v-btn>
-			<v-btn @click="underline()" size="x-small">
-				<v-icon size="x-large">mdi-format-underline</v-icon>
-			</v-btn>
-
-			<v-divider :vertical="true"></v-divider>
-
-			<v-btn @click="ul()" size="x-small">
-				<v-icon size="x-large">mdi-format-list-bulleted</v-icon>
-			</v-btn>
-			<v-btn @click="ol()" size="x-small">
-				<v-icon size="x-large">mdi-format-list-numbered</v-icon>
-			</v-btn>
-
-			<v-divider :vertical="true"></v-divider>
-
-			<v-btn @click="align_left()" size="x-small">
-				<v-icon size="x-large">mdi-format-align-left</v-icon>
-			</v-btn>
-			<v-btn @click="align_center()" size="x-small">
-				<v-icon size="x-large">mdi-format-align-center</v-icon>
-			</v-btn>
-			<v-btn @click="align_right()" size="x-small">
-				<v-icon size="x-large">mdi-format-align-right</v-icon>
-			</v-btn>
-
-			<v-divider :vertical="true"></v-divider>
-
-			<v-menu>
-				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" size="x-small">
-						<v-icon size="x-large">mdi-format-header-pound</v-icon>
+		<div style="max-width: 100%; overflow-x: auto;">
+			<div style="width: max-content">
+				<v-btn-toggle
+					:multiple="true"
+					v-model="toggle_multiple"
+					rounded="0"
+					density="compact"
+				>
+					<v-btn @click="bold()" size="x-small">
+						<v-icon size="x-large">mdi-format-bold</v-icon>
 					</v-btn>
-				</template>
-				<v-list>
-					<v-btn
-						variant="text"
-						@click="header('div')"
-						:block="true"
-					>
-						Plain Text
+					<v-btn @click="italic()" size="x-small">
+						<v-icon size="x-large">mdi-format-italic</v-icon>
 					</v-btn>
-					<v-btn
-						v-for="index in 6"
-						variant="text"
-						@click="header('h' + index)"
-						:block="true"
-					>
-						Header {{ index }}
+					<v-btn @click="underline()" size="x-small">
+						<v-icon size="x-large">mdi-format-underline</v-icon>
 					</v-btn>
-				</v-list>
-			</v-menu>
 
-			<v-menu>
-				<template v-slot:activator="{ props }">
-					<v-btn v-bind="props" size="x-small">
-						<v-icon size="x-large">mdi-format-size</v-icon>
+					<v-divider :vertical="true"></v-divider>
+
+					<v-btn @click="ul()" size="x-small">
+						<v-icon size="x-large">mdi-format-list-bulleted</v-icon>
 					</v-btn>
-				</template>
-				<v-list>
-					<v-btn
-						v-for="size in font_size_list"
-						variant="text"
-						@click="font_size(size.value)"
-						:block="true"
-					>
-						{{ size.title }}
+					<v-btn @click="ol()" size="x-small">
+						<v-icon size="x-large">mdi-format-list-numbered</v-icon>
 					</v-btn>
-				</v-list>
-			</v-menu>
 
-			<v-divider :vertical="true"></v-divider>
+					<v-divider :vertical="true"></v-divider>
 
-			<v-btn @click="image()" size="x-small">
-				<v-icon size="x-large">mdi-image</v-icon>
-			</v-btn>
+					<v-btn @click="align_left()" size="x-small">
+						<v-icon size="x-large">mdi-format-align-left</v-icon>
+					</v-btn>
+					<v-btn @click="align_center()" size="x-small">
+						<v-icon size="x-large">mdi-format-align-center</v-icon>
+					</v-btn>
+					<v-btn @click="align_right()" size="x-small">
+						<v-icon size="x-large">mdi-format-align-right</v-icon>
+					</v-btn>
 
-			<v-btn @click="url()" size="x-small">
-				<v-icon size="x-large">mdi-link</v-icon>
-			</v-btn>
-		</v-btn-toggle>
+					<v-divider :vertical="true"></v-divider>
+
+					<v-menu>
+						<template v-slot:activator="{ props }">
+							<v-btn v-bind="props" size="x-small">
+								<v-icon size="x-large">mdi-format-header-pound</v-icon>
+							</v-btn>
+						</template>
+						<v-list>
+							<v-btn
+								variant="text"
+								@click="header('div')"
+								:block="true"
+							>
+								Plain Text
+							</v-btn>
+							<v-btn
+								v-for="index in 6"
+								variant="text"
+								@click="header('h' + index)"
+								:block="true"
+							>
+								Header {{ index }}
+							</v-btn>
+						</v-list>
+					</v-menu>
+
+					<v-menu>
+						<template v-slot:activator="{ props }">
+							<v-btn v-bind="props" size="x-small">
+								<v-icon size="x-large">mdi-format-size</v-icon>
+							</v-btn>
+						</template>
+						<v-list>
+							<v-btn
+								v-for="size in font_size_list"
+								variant="text"
+								@click="font_size(size.value)"
+								:block="true"
+							>
+								{{ size.title }}
+							</v-btn>
+						</v-list>
+					</v-menu>
+
+					<v-divider :vertical="true"></v-divider>
+
+					<v-btn @click="image()" size="x-small">
+						<v-icon size="x-large">mdi-image</v-icon>
+					</v-btn>
+
+					<v-btn @click="url()" size="x-small">
+						<v-icon size="x-large">mdi-link</v-icon>
+					</v-btn>
+				</v-btn-toggle>
+			</div>
+		</div>
 		<v-divider></v-divider>
 		<div ref="editor"
 		     v-html="html"
