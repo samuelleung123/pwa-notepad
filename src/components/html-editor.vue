@@ -1,6 +1,6 @@
 <script setup>
 import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
-import {file_to_data_url} from "@/helpers/file";
+import {file_to_data_url, pick_file} from "@/helpers/file";
 
 
 const props = defineProps({
@@ -138,22 +138,14 @@ const font_size = (size) => {
 const image = async () => {
 
 	let url = null;
-	/** @var {FileSystemHandle[]} files */
-	let files = await window.showOpenFilePicker({
+	/** @var {File[]} files */
+	let files = await pick_file({
 		multiple: true,
-		types: [
-			{
-				description: 'Images',
-				accept: {
-					'image/*': ['.png', '.gif', '.jpeg', '.jpg'],
-				},
-			},
-		],
+		accept: 'image/*'
 	})
 
 	for (const file of files) {
-		const blob = await file.getFile();
-		let data_url = await file_to_data_url(blob);
+		let data_url = await file_to_data_url(file);
 		document.execCommand('insertImage', false, data_url);
 
 	}
