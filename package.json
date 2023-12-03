@@ -1,0 +1,23 @@
+{
+  "name": "pwa-notepad",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "moment": "^2.29.4",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5",
+    "vuetify": "^3.4.4"
+  },
+  "devDependencies": {
+    "@mdi/font": "^7.3.67",
+    "@vitejs/plugin-vue": "^4.4.0",
+    "sass": "^1.69.5",
+    "vite": "^4.4.11",
+    "vite-plugin-pwa": "^0.17.2"
+  }
+}
