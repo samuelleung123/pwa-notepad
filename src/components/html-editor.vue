@@ -146,7 +146,10 @@ const image = async () => {
 
 	for (const file of files) {
 		let data_url = await file_to_data_url(file);
-		document.execCommand('insertImage', false, data_url);
+		let result = document.execCommand('insertImage', false, data_url);
+		if (!result) {
+			editor.value.innerHTML += `<img src="${data_url}" />`;
+		}
 
 	}
 }
@@ -201,6 +204,11 @@ const context_menu = ref({
 				a.href = data_url;
 				a.download = 'image.png';
 				a.click();
+			}
+		},
+		{
+			title: 'Remove', click: () => {
+				context_menu.value.img_el.outerHTML = "";
 			}
 		}
 	],
