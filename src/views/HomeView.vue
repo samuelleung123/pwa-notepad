@@ -1,10 +1,11 @@
 <script setup>
 import HtmlEditor from "@/components/html-editor.vue";
 
-import {ref, watch} from 'vue'
+import {onUnmounted, ref, watch} from 'vue'
 import {Note} from "@/models/Note";
 import moment from "moment";
 import router from "@/router";
+import {auto_save} from "@/states/auto_save";
 
 
 const props = defineProps({
@@ -13,6 +14,16 @@ const props = defineProps({
 
 watch(() => props.id, () => {
 	refresh_note();
+});
+
+const interval_id = setInterval(() => {
+	if (auto_save.value.enabled && record.value.is_changed()) {
+		save_record();
+	}
+}, 1000);
+
+onUnmounted(() => {
+	clearInterval(interval_id);
 });
 
 const record = ref(null);
@@ -45,7 +56,6 @@ const delete_record = () => {
 	record.value.delete();
 	router.push('/');
 }
-
 
 refresh_note();
 

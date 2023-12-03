@@ -186,7 +186,7 @@ const context_menu = ref({
 		},
 		{
 			title: 'Resize', click: () => {
-				console.log('resize');
+				// console.log('resize');
 				resize_image_dialog.value.img_el = context_menu.value.img_el;
 				resize_image_dialog.value.width = context_menu.value.img_el.width;
 				resize_image_dialog.value.height = context_menu.value.img_el.height;
@@ -311,7 +311,7 @@ const update_toggle_multiple = () => {
 		toggle_multiple.value.push(2)
 	}
 
-	console.log(toggle_multiple.value);
+	// console.log(toggle_multiple.value);
 }
 
 </script>

@@ -4,6 +4,7 @@ import {RouterView} from 'vue-router'
 
 import {ref} from 'vue'
 import {Note} from "@/models/Note";
+import {auto_save} from "@/states/auto_save";
 
 const drawer = ref(null)
 
@@ -76,11 +77,22 @@ refresh_notes();
 			</v-list>
 
 			<template v-slot:append>
-				<div class="pa-2">
-					<v-btn :icon="true" @click="toggle_theme()" variant="flat">
-						<v-icon>mdi-theme-light-dark</v-icon>
-					</v-btn>
-				</div>
+				<v-list>
+					<v-list-item @click="toggle_theme()">
+						<div style="display: flex; align-items: center;">
+							Dark Mode
+							<v-spacer></v-spacer>
+							<v-icon>mdi-theme-light-dark</v-icon>
+						</div>
+					</v-list-item>
+					<v-list-item @click="auto_save.toggle()">
+						<div style="display: flex; align-items: center;">
+							Auto Save
+							<v-spacer></v-spacer>
+							<v-icon v-if="auto_save.enabled" color="success">mdi-check-circle</v-icon>
+						</div>
+					</v-list-item>
+				</v-list>
 			</template>
 		</v-navigation-drawer>
 
