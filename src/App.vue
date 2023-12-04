@@ -52,13 +52,11 @@ refresh_notes();
 		<v-navigation-drawer v-model="drawer">
 
 			<template v-slot:prepend>
-				<div class="pa-2">
-					<v-list>
-						<v-list-item to="/" color="primary" prepend-icon="mdi-plus">
-							<v-list-item-title>New Note</v-list-item-title>
-						</v-list-item>
-					</v-list>
-				</div>
+				<v-list>
+					<v-list-item to="/" color="primary" prepend-icon="mdi-plus">
+						<v-list-item-title>New Note</v-list-item-title>
+					</v-list-item>
+				</v-list>
 			</template>
 
 

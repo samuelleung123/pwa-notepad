@@ -53,6 +53,9 @@ const save_record = async () => {
 }
 
 const delete_record = () => {
+	if(!confirm('Are you sure you want to delete this note?')) {
+		return;
+	}
 	record.value.delete();
 	router.push('/');
 }

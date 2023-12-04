@@ -1,6 +1,7 @@
 <script setup>
 import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
-import {file_to_data_url, pick_file} from "@/helpers/file";
+import {delete_file, file_to_data_url, get_file, pick_file, save_file} from "@/helpers/file";
+import {async_timeout} from "@/helpers/async_utils";
 
 
 const props = defineProps({
@@ -145,13 +146,63 @@ const image = async () => {
 	})
 
 	for (const file of files) {
-		let data_url = await file_to_data_url(file);
-		let result = document.execCommand('insertImage', false, data_url);
-		if (!result) {
-			editor.value.innerHTML += `<img src="${data_url}" />`;
-		}
+		let file_id = await save_file(file);
+		let html_img = `<img data-file_id="${file_id}" /><br/>`
 
+		let result = insert_html(html_img);
+		if (!result) {
+			editor.value.innerHTML += html_img;
+		}
 	}
+	await update_media_src();
+}
+
+// video
+const video = async () => {
+
+	let url = null;
+	/** @var {File[]} files */
+	let files = await pick_file({
+		multiple: true,
+		accept: 'video/*'
+	})
+
+	for (const file of files) {
+		let file_id = await save_file(file);
+		let html_img = `<video data-file_id="${file_id}" controls></video><br/>`
+
+		let result = insert_html(html_img);
+		if (!result) {
+			editor.value.innerHTML += html_img;
+		}
+	}
+	await update_media_src();
+}
+
+// audio
+const audio = async () => {
+
+	let url = null;
+	/** @var {File[]} files */
+	let files = await pick_file({
+		multiple: true,
+		accept: 'audio/*'
+	})
+
+	for (const file of files) {
+		let file_id = await save_file(file);
+		let html_img = `<audio data-file_id="${file_id}" controls></audio><br/>`
+
+		let result = insert_html(html_img);
+		if (!result) {
+			editor.value.innerHTML += html_img;
+		}
+	}
+	await update_media_src();
+}
+
+const insert_html = (html) => {
+	return document.execCommand('insertHTML', false, html);
 }
 
 // url
@@ -176,11 +227,11 @@ const context_menu = ref({
 	x: 0,
 	y: 0,
 	type: null,
-	img_el: null,
-	image_menu: [
+	media_el: null,
+	media_menu: [
 		{
 			title: "Open", click: async () => {
-				let data_url = context_menu.value.img_el.src;
+				let data_url = context_menu.value.media_el.src;
 				let blob = await (await fetch(data_url)).blob();
 				let file = new File([blob], 'image.png', {type: blob.type});
 				let url = URL.createObjectURL(file);
@@ -190,16 +241,16 @@ const context_menu = ref({
 		{
 			title: 'Resize', click: () => {
 				// console.log('resize');
-				resize_image_dialog.value.img_el = context_menu.value.img_el;
-				resize_image_dialog.value.width = context_menu.value.img_el.width;
-				resize_image_dialog.value.height = context_menu.value.img_el.height;
+				resize_image_dialog.value.media_el = context_menu.value.media_el;
+				resize_image_dialog.value.width = context_menu.value.media_el.width;
+				resize_image_dialog.value.height = context_menu.value.media_el.height;
 				resize_image_dialog.value.open = true;
 
 			}
 		},
 		{
 			title: 'Save As', click: () => {
-				let data_url = context_menu.value.img_el.src;
+				let data_url = context_menu.value.media_el.src;
 				let a = document.createElement('a');
 				a.href = data_url;
 				a.download = 'image.png';
@@ -208,7 +259,11 @@ const context_menu = ref({
 		},
 		{
 			title: 'Remove', click: () => {
-				context_menu.value.img_el.outerHTML = "";
+				let file_id = context_menu.value.media_el.dataset.file_id;
+				context_menu.value.media_el.outerHTML = "";
+				if (file_id) {
+					delete_file(file_id);
+				}
 			}
 		}
 	],
@@ -231,9 +286,10 @@ const context_menu = ref({
 
 const open_context_menu = (event) => {
 	context_menu.value.type = null;
-	if (event.srcElement.nodeName === 'IMG') {
-		context_menu.value.type = 'image';
-		context_menu.value.img_el = event.srcElement;
+	console.log('clicked', event.srcElement.nodeName);
+	if (['IMG', 'VIDEO', 'AUDIO'].includes(event.srcElement.nodeName)) {
+		context_menu.value.type = 'media';
+		context_menu.value.media_el = event.srcElement;
 	}
 	if (event.srcElement.nodeName === 'A') {
 		context_menu.value.type = 'a';
@@ -251,25 +307,25 @@ const open_context_menu = (event) => {
 // resize image dialog
 const resize_image_dialog = ref({
 	open: false,
-	img_el: null,
+	media_el: null,
 	width: 0,
 	height: 0,
 	confirm() {
 		if (this.width) {
-			this.img_el.width = this.width;
+			this.media_el.setAttribute('width', this.width);
 		} else {
-			this.img_el.removeAttribute('width');
+			this.media_el.removeAttribute('width');
 		}
 		if (this.height) {
-			this.img_el.height = this.height;
+			this.media_el.setAttribute('height', this.height);
 		} else {
-			this.img_el.removeAttribute('height');
+			this.media_el.removeAttribute('height');
 		}
 		this.close();
 	},
 	close() {
 		this.open = false;
-		this.img_el = null;
+		this.media_el = null;
 		this.width = 0;
 		this.height = 0;
 	}
@@ -322,6 +378,20 @@ const update_toggle_multiple = () => {
 	// console.log(toggle_multiple.value);
 }
 
+const update_media_src = async () => {
+	await async_timeout(100);
+	for (const el of editor.value.querySelectorAll('img[data-file_id], video[data-file_id], audio[data-file_id]')) {
+		let file_id = el.dataset.file_id
+		let old_src = el.src;
+		if (old_src.includes('blob:')) {
+			URL.revokeObjectURL(old_src);
+		}
+		let file = await get_file(file_id);
+		el.src = URL.createObjectURL(file);
+	}
+}
+
+update_media_src();
 </script>
 
 <template>
@@ -414,6 +484,14 @@ const update_toggle_multiple = () => {
 
 					<v-btn @click="image()" size="x-small">
 						<v-icon size="x-large">mdi-image</v-icon>
+					</v-btn>
+
+					<v-btn @click="video()" size="x-small">
+						<v-icon size="x-large">mdi-video</v-icon>
+					</v-btn>
+
+					<v-btn @click="audio()" size="x-small">
+						<v-icon size="x-large">mdi-microphone</v-icon>
 					</v-btn>
 
 					<v-btn @click="url()" size="x-small">

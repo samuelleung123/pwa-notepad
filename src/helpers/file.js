@@ -1,3 +1,6 @@
+import {localforage} from "@/lib/DataModel.min";
+import {uuidv4} from "@/helpers/uuid";
+
 /**
  *
  * @param {File} file
@@ -23,4 +26,32 @@ export const pick_file = async (options = {}) => {
 		}
 		input.click()
 	})
+}
+
+const file_storage = localforage.createInstance({
+	name: 'file_storage'
+});
+
+/**
+ * save the file to local storage (localforage) and return the file_id
+ * @param file
+ * @return {Promise<string>}
+ */
+export const save_file = async (file) => {
+	let id = uuidv4();
+	await file_storage.setItem(id, file);
+	return id;
+}
+
+/**
+ * get the file from local storage (localforage) by file_id
+ * @param file_id
+ * @return {Promise<File>}
+ */
+export const get_file = async (file_id) => {
+	return await file_storage.getItem(file_id);
+}
+
+export const delete_file = async (file_id) => {
+	return await file_storage.removeItem(file_id);
 }
